@@ -1,0 +1,267 @@
+/*
+ * main.c
+ *
+ *  Created on: 12-Jan-2020
+ *      Author: user
+ */
+//Stacks ll
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdio_ext.h>
+struct stack
+{
+	char data ;
+	struct stack *next ;
+};
+int push(struct stack **fhead, int fidata) ;
+int isFull(struct stack *fnewnode) ;
+int pop(struct stack **fhead, int *fddata) ;
+int isEmpty(struct stack *fhead) ;
+int displayTop(struct stack *fhead, int *ftdata) ;
+int displayStack(struct stack **fhead) ;
+int main (void)
+{
+	int choice = 0 ;
+	int flag = 0 ;
+	int idata = 0 ;
+	int ddata = 0 ;
+	int tdata = 0 ;
+	struct stack *head = NULL ;
+
+	do
+	{
+		do
+		{
+			printf("\n***********************************") ;
+			printf("\nSTACK MENU :") ;
+			printf("\n1. Push an Element") ;
+			printf("\n2. Pop an Element") ;
+			printf("\n3. Display Top Element") ;
+			printf("\n4. Display all Elements") ;
+			printf("\n0. Exit") ;
+			printf("\nYour Choice = ") ;
+			scanf("%d",&choice) ;
+		}while(choice<0 || choice>4) ;
+
+		switch(choice)
+		{
+			case 1 :
+				printf("\nEnter element to be pushed = ") ;
+				scanf("%d",&idata) ;
+				flag = push(&head, idata) ;
+
+				if(flag == 1)
+				{
+					printf("Element %d not pushed. Stack Full.", idata) ;
+				}
+				else
+				{
+					printf("Element %d pushed successfully.", idata) ;
+				}
+				break ;
+
+			case 2 :
+				flag = pop(&head, &ddata) ;
+
+				if(flag == 1)
+				{
+					printf("Element cannot be popped. Stack is Empty.") ;
+				}
+				else
+				{
+					printf("Element %d popped successfully.", ddata) ;
+				}
+				break ;
+
+			case 3 :
+				flag = displayTop(head, &tdata) ;
+
+				if(flag == 1)
+				{
+					printf("No element to display. Stack is Empty.") ;
+				}
+				else
+				{
+					printf("\nThe top element is %d.",tdata) ;
+				}
+				break ;
+
+			case 4 :
+				flag = displayStack(&head) ;
+
+				if(flag == 1)
+				{
+					printf("No element to display. Stack is Empty.") ;
+				}
+				break ;
+
+			case 0 :
+				printf("\nThank You !!") ;
+				break ;
+		}
+
+	}while(choice != 0) ;
+
+	return 0 ;
+}
+int push(struct stack **fhead, int fidata)
+{
+	int rval = 0 ;
+	int sf = 0 ;
+	struct stack *head = NULL ;
+	struct stack *newnode = NULL ;
+
+	head = *fhead ;
+
+	newnode = (struct stack *)calloc (1, sizeof(struct stack)) ;
+
+	sf = isFull(newnode) ;
+	if(sf == 1)
+	{
+		rval = 1 ;  //stack full
+	}
+	else
+	{
+		rval = 0 ;
+
+		newnode->data = fidata ;
+
+		if (head == NULL)
+		{
+			head = newnode ;
+		}
+		else
+		{
+			newnode->next = head ;
+			head = newnode ;
+		}
+	}
+
+	*fhead = head ;
+
+	return rval ;
+}
+int isFull(struct stack *fnewnode)
+{
+	int rval = 0 ;
+
+	if (fnewnode == NULL)
+	{
+		rval = 1 ; //stack full
+	}
+	else
+	{
+		rval = 0 ;
+	}
+
+	return rval ;
+}
+int pop(struct stack **fhead, int *fddata)
+{
+	int rval = 0 ;
+	int se = 0 ;
+	struct stack *head = NULL ;
+	struct stack *dnode = NULL ;
+
+	head = *fhead ;
+
+	se = isEmpty(head) ;
+	if(se == 1)
+	{
+		rval = 1 ;  //stack empty
+	}
+	else
+	{
+		rval = 0 ;
+		dnode = head ;
+		*fddata = dnode->data ;
+		head = head->next ;
+
+		dnode->next = NULL ;
+		free(dnode) ;
+		dnode = NULL ;
+	}
+
+	*fhead = head ;
+
+	return rval ;
+}
+int isEmpty(struct stack *fhead)
+{
+	int rval = 0 ;
+
+	if (fhead == NULL)
+	{
+		rval = 1 ;  //stack empty
+	}
+	else
+	{
+		rval = 0 ;
+	}
+	return rval ;
+}
+int displayTop(struct stack *fhead, int *ftdata)
+{
+	int rval = 0 ;
+	int se = 0 ;
+
+	se = isEmpty(fhead) ;
+	if (se == 1)
+	{
+		rval = 1 ;
+	}
+	else
+	{
+		rval = 0 ;
+		*ftdata = fhead->data ;       //top is not decremented
+	}
+
+	return rval ;
+}
+int displayStack(struct stack **fhead)
+{
+	int rval = 0 ;
+	int se = 0 ;
+	int ps = 0 ;   //ps : pop successful
+	int dElem = 0 ;
+	struct stack *t = NULL ;
+	struct stack *head = NULL ;
+
+	head = *fhead ;
+
+	se = isEmpty(head) ;
+	if (se == 1)
+	{
+		rval = 1 ;
+	}
+	else
+	{
+		rval = 0 ;
+		printf ("\nStack Elements = ") ;
+		do
+		{
+			ps = pop(&head, &dElem) ;
+			if(ps != 1)
+			{
+				printf ("\n\t%d", dElem) ;
+				push(&t, dElem) ;
+			}
+
+		}while (ps == 0) ;
+
+		do
+		{
+			ps = pop(&t, &dElem) ;
+			if(ps != 1)
+			{
+				push(&head, dElem) ;
+			}
+
+		} while (ps == 0) ;
+	}
+
+	*fhead = head ;
+
+	return rval ;
+}
